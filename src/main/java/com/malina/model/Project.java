@@ -23,8 +23,11 @@ public class Project extends PersistentObject {
     @Lob
     private String description;
 
-    @OneToMany(fetch = FetchType.EAGER)
     @Singular
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "project_user",
+    joinColumns = @JoinColumn(name = "user_id"),
+    inverseJoinColumns = @JoinColumn(name = "project_id"))
     private List<User> users = new ArrayList<>();
 
     @OneToMany
