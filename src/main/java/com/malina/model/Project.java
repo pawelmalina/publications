@@ -11,7 +11,9 @@ import java.util.List;
  * Created by pawel on 24.11.17.
  */
 @Entity
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(exclude = "users")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,11 +26,12 @@ public class Project extends PersistentObject {
     private String description;
 
     @Singular
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "project_user",
-    joinColumns = @JoinColumn(name = "user_id"),
-    inverseJoinColumns = @JoinColumn(name = "project_id"))
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "project_id"))
     private List<User> users = new ArrayList<>();
+
 
     @OneToMany
     @Singular
@@ -37,4 +40,6 @@ public class Project extends PersistentObject {
     @OneToMany
     @Singular
     private List<Document> documents = new ArrayList<>();
+
+
 }

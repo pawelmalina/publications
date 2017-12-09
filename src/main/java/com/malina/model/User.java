@@ -1,10 +1,7 @@
 package com.malina.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
@@ -14,7 +11,9 @@ import java.util.List;
  * Created by pawel on 23.11.17.
  */
 @Entity
-@Data
+@EqualsAndHashCode(exclude = {"projects"})
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,5 +29,4 @@ public class User extends PersistentObject {
 
     @JsonIgnore
     private String password;
-
 }
