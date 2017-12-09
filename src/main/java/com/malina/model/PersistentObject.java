@@ -12,4 +12,7 @@ public class PersistentObject {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    public Long getId() {
+        return id;
+    }
 }
