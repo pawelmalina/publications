@@ -1,5 +1,6 @@
 package com.malina.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -30,15 +31,19 @@ public class Project extends PersistentObject {
     @JoinTable(name = "project_user",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "project_id"))
+    @JsonIgnore
     private List<User> users = new ArrayList<>();
 
 
     @OneToMany
     @Singular
+    @JsonIgnore
     private List<Task> tasks = new ArrayList<>();
 
     @OneToMany
     @Singular
+
+    @JsonIgnore
     private List<Document> documents = new ArrayList<>();
 
 

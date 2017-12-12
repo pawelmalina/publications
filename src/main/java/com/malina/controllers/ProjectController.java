@@ -6,13 +6,10 @@ import com.malina.repositories.ProjectRepository;
 import com.malina.repositories.UserRepository;
 import com.malina.services.ProjectService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.HEAD;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * Created by pawel on 24.11.17.
@@ -20,25 +17,29 @@ import javax.ws.rs.core.MediaType;
 @RestController
 @RequestMapping("/project")
 @AllArgsConstructor
+@CrossOrigin(origins = "*")
 public class ProjectController {
 
     private final ProjectRepository projectRepository;
-    private final UserRepository userRepository;
     private final ProjectService projectService;
+    private final UserRepository userRepository;
+
+    @RequestMapping("/all")
+    public List<Project> getProjects(){
+        return projectRepository.findAll();
+    }
 
     @RequestMapping(path = "/one/{id}", method = RequestMethod.GET)
-    public Project findProject(@PathVariable("id") Long id){
+    public Project findProject(@PathVariable("id") Long id) {
         Project project = projectRepository.getOne(id);
         return project;
     }
 
     @RequestMapping(path = "{project_id}/add-user/{user_id}", method = RequestMethod.POST)
-    @ResponseBody
-    public boolean addUserToProject(@PathVariable("user_id") String userId, @PathVariable("project_id") String projectId){
+    @ResponseStatus(HttpStatus.OK)
+    public void addUserToProject(@PathVariable("user_id") String userId, @PathVariable("project_id") String projectId) {
         Project project = projectRepository.findById(Long.valueOf(projectId));
         User user = userRepository.getOne(Long.valueOf(userId));
-
         projectService.addUserToProject(project, user);
-        return true;
     }
 }
