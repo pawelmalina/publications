@@ -5,7 +5,9 @@ import lombok.*;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by pawel on 24.11.17.
@@ -25,5 +27,5 @@ public class Task extends PersistentObject{
 
     @OneToMany
     @Singular
-    private List<Document> documents;
+    private Set<Document> documents = new HashSet<>();
 }

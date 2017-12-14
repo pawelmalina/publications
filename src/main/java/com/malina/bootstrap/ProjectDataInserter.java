@@ -1,5 +1,6 @@
 package com.malina.bootstrap;
 
+import com.malina.model.Message;
 import com.malina.model.Project;
 import com.malina.repositories.ProjectRepository;
 import org.springframework.stereotype.Component;

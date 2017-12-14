@@ -1,12 +1,10 @@
 package com.malina.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by pawel on 24.11.17.
@@ -27,24 +25,22 @@ public class Project extends PersistentObject {
     private String description;
 
     @Singular
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "project_user",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "project_id"))
-    @JsonIgnore
-    private List<User> users = new ArrayList<>();
+    private Set<User> users = new HashSet<>();
 
 
     @OneToMany
     @Singular
-    @JsonIgnore
-    private List<Task> tasks = new ArrayList<>();
+    private Set<Task> tasks = new HashSet<>();
 
     @OneToMany
     @Singular
+    private Set<Document> documents = new HashSet<>();
 
-    @JsonIgnore
-    private List<Document> documents = new ArrayList<>();
-
-
+    @OneToMany
+    @Singular
+    private Set<Message> messages = new HashSet<>();
 }

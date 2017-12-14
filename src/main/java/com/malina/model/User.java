@@ -5,7 +5,9 @@ import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by pawel on 23.11.17.
@@ -25,7 +27,7 @@ public class User extends PersistentObject {
     private String email;
 
     @ManyToMany(mappedBy = "users")
-    private List<Project> projects;
+    private Set<Project> projects = new HashSet<>();
 
     @JsonIgnore
     private String password;
