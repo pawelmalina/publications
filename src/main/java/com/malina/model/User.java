@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,4 +32,9 @@ public class User extends PersistentObject {
 
     @JsonIgnore
     private String password;
+
+    @Transient
+    public String getFullName(){
+        return firstName + " " + lastName;
+    }
 }

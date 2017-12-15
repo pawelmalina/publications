@@ -37,10 +37,12 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public void addMessageToProject(Project project, Message message) {
-        Set<Message> messages = new HashSet<>();
+        List<Message> messages = new ArrayList<>();
         project.getMessages().iterator().forEachRemaining(messages::add);
         messages.add(message);
         project.setMessages(messages);
         projectRepository.save(project);
     }
+
+
 }

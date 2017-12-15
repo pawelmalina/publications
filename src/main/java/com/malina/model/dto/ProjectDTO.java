@@ -8,7 +8,9 @@ import lombok.Setter;
 import lombok.Singular;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,8 +31,9 @@ public class ProjectDTO {
     private Set<NameAndIdDTO> users = new HashSet<>();
     private Set<Long> tasks = new HashSet<>();
     private Set<Long> documents = new HashSet<>();
+    private List<MessageDTO> messages = new ArrayList<>();
 
-    public ProjectDTO convertToDTO(Project project){
+    public ProjectDTO convertToDTO(Project project) {
 
         this.setId(project.getId());
 
@@ -42,6 +45,9 @@ public class ProjectDTO {
         this.setUsers(project.getUsers().stream().map(user -> {
             return new NameAndIdDTO(user.getId(), user.getFirstName() + " " + user.getLastName());
         }).collect(Collectors.toSet()));
+        this.setMessages(project.getMessages().stream().map(message -> {
+           return  new MessageDTO(message.getId(), message.getAuthor().getFullName(), message.getContent(), message.getDate().getTime());
+        }).collect(Collectors.toList()));
         return this;
     }
 }
