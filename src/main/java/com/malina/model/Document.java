@@ -1,13 +1,11 @@
 package com.malina.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by pawel on 24.11.17.
@@ -20,13 +18,30 @@ import java.util.Date;
 public class Document extends PersistentObject{
 
     private String title;
+    @Lob
     private String description;
     private boolean blocked = false;
     private Date creationDate;
-    private Date lastModificationDate;
     private Date blockedFromDate;
     private Date blockedToDate;
 
     @OneToOne
+    private User createdBy;
+
+    @OneToOne
+    private UploadedFile currentVersion;
+
+    @Singular
+    @OneToMany
+    private List<UploadedFile> historicalFiles = new ArrayList<>();
+
+    @OneToOne
     private User blockedByUser;
+
+    @Transient
+    public void lockFile(Date blockedToDate) {
+        this.blocked = true;
+        this.blockedFromDate = new Date();
+        this.blockedToDate = blockedToDate;
+    }
 }

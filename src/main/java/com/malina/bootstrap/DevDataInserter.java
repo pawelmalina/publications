@@ -1,5 +1,6 @@
 package com.malina.bootstrap;
 
+import com.malina.model.Document;
 import com.malina.model.Message;
 import com.malina.model.Project;
 import com.malina.model.User;
@@ -25,19 +26,22 @@ public class DevDataInserter implements ApplicationListener<ContextRefreshedEven
     private final TaskRepository taskRepository;
     private final DocumentRepository documentRepository;
     private final MessageRepository messageRepository;
+    private final FileRepository fileRepository;
 
     private final UserDataInserter userData;
     private final ProjectDataInserter projectData;
+    private final DocumentDataInserter documentData;
 
     private final ProjectServiceImpl projectService;
 
     @Override
     @Transactional
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+        /* The order is important */
         userData.insertData();
         projectData.insertData();
-
         addUsersToProjects();
+        documentData.insertData(projectData.getProjects());
     }
 
     private void addUsersToProjects() {
