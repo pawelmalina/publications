@@ -77,7 +77,7 @@ public class ProjectController {
 
     @RequestMapping(path = "all-messages/{project_id}", method = RequestMethod.GET)
     @ResponseBody
-    public List<MessageDTO> getMessages(@PathVariable("project_id") Long projectId) {
+    public List<MessageDTO> getMessagesFromProject(@PathVariable("project_id") Long projectId) {
         Optional<Project> projectOptional = projectRepository.findById(projectId);
         if (!projectOptional.isPresent()) {
             throw new RuntimeException("Project not found");
@@ -86,7 +86,7 @@ public class ProjectController {
     }
 
     @RequestMapping(path = "add-message", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON)
-    public HttpStatus addMessage(@RequestBody NewMessageDTO newMessage) {
+    public HttpStatus addMessageToProject(@RequestBody NewMessageDTO newMessage) {
         Optional<Project> projectOptional = projectRepository.findById(newMessage.getTargetId());
         if (!projectOptional.isPresent()) {
             throw new RuntimeException("Project not found");
