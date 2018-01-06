@@ -8,6 +8,7 @@ import com.malina.repositories.DocumentRepository;
 import com.malina.repositories.FileRepository;
 import com.malina.repositories.ProjectRepository;
 import com.malina.services.FileServiceImpl;
+import com.malina.services.ProjectService;
 import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.time.DateUtils;
@@ -36,14 +37,17 @@ public class DocumentDataInserter {
     private final DocumentRepository documentRepository;
     private final FileRepository fileRepository;
     private final FileServiceImpl fileService;
+    private final ProjectService projectService;
 
     private List<Project> projects;
     private List<Path> paths;
 
-    public DocumentDataInserter(DocumentRepository documentRepository, FileRepository fileRepository, FileServiceImpl fileService) throws IOException {
+    public DocumentDataInserter(DocumentRepository documentRepository, FileRepository fileRepository,
+                                ProjectService projectService, FileServiceImpl fileService) throws IOException {
         this.documentRepository = documentRepository;
         this.fileRepository = fileRepository;
         this.fileService = fileService;
+        this.projectService = projectService;
 
         initFilesPaths();
     }
@@ -90,7 +94,15 @@ public class DocumentDataInserter {
         UploadedFile uf4 = createUploadedFile(paths.get(0), user1,
                 new Date(new Date().getTime() - DateUtils.MILLIS_PER_DAY * 2));
         fileRepository.save(uf4);
-        fileService.addUploadedFileToDocument(document1, uf4);
+        fileService.addUploadedFileToDocument(document2, uf4);
+
+        UploadedFile uf5 = createUploadedFile(paths.get(0), user2,
+                new Date(new Date().getTime() - DateUtils.MILLIS_PER_DAY * 1));
+        fileRepository.save(uf5);
+        fileService.addUploadedFileToDocument(document2, uf5);
+
+        projectService.addDocumentToProject(project1, document1);
+        projectService.addDocumentToProject(project1, document2);
 
     }
 

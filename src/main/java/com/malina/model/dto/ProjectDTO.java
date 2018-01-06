@@ -27,10 +27,9 @@ public class ProjectDTO {
     private String name;
     private String description;
 
-
     private Set<NameAndIdDTO> users = new HashSet<>();
     private Set<Long> tasks = new HashSet<>();
-    private Set<Long> documents = new HashSet<>();
+    private Set<NameAndIdDTO> documents = new HashSet<>();
     private List<MessageDTO> messages = new ArrayList<>();
 
     public ProjectDTO convertToDTO(Project project) {
@@ -40,7 +39,7 @@ public class ProjectDTO {
         this.setName(project.getName());
         this.setTitle(project.getTitle());
         this.setDescription(project.getDescription());
-        this.setDocuments(project.getDocuments().stream().map(PersistentObject::getId).collect(Collectors.toSet()));
+        this.setDocuments(project.getDocuments().stream().map(document -> new NameAndIdDTO(document.getId(), document.getTitle())).collect(Collectors.toSet()));
         this.setTasks(project.getTasks().stream().map(PersistentObject::getId).collect(Collectors.toSet()));
         this.setUsers(project.getUsers().stream().map(user -> {
             return new NameAndIdDTO(user.getId(), user.getFirstName() + " " + user.getLastName());

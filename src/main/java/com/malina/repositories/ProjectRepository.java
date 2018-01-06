@@ -23,4 +23,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Query("SELECT new com.malina.model.dto.NameAndIdDTO(u.id, u.name) FROM Project u")
     List<NameAndIdDTO> getUsersNameFromProject();
 
+//    @Query("SELECT new com.malina.model.dto.NameAndIdDTO(u.id, u.name) FROM Project u")
+//    List<NameAndIdDTO> getDocumentNameFromProject();
+
 }
