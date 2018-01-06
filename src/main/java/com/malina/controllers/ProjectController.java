@@ -97,9 +97,7 @@ public class ProjectController {
             throw new RuntimeException("User not found");
         }
         Message message = new Message(userOptional.get(), new Date(), newMessage.getContent());
-
         projectService.addMessageToProject(projectOptional.get(), message);
-
         return HttpStatus.OK;
     }
 }

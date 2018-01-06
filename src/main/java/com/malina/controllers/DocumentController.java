@@ -1,6 +1,10 @@
 package com.malina.controllers;
 
+import com.malina.model.Document;
+import com.malina.model.Project;
 import com.malina.model.UploadedFile;
+import com.malina.model.dto.DocumentDTO;
+import com.malina.model.dto.ProjectDTO;
 import com.malina.repositories.DocumentRepository;
 import com.malina.repositories.FileRepository;
 import lombok.extern.log4j.Log4j;
@@ -13,8 +17,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-
-import static org.springframework.http.MediaType.APPLICATION_PDF;
+import java.util.Optional;
 
 /**
  * Created by pawel on 24.11.17.
@@ -22,6 +25,7 @@ import static org.springframework.http.MediaType.APPLICATION_PDF;
 @RestController
 @Log4j
 @RequestMapping("document")
+@CrossOrigin(origins = "*")
 public class DocumentController {
 
     private final DocumentRepository documentRepository;
@@ -31,6 +35,19 @@ public class DocumentController {
     public DocumentController(DocumentRepository documentRepository, FileRepository fileRepository) {
         this.documentRepository = documentRepository;
         this.fileRepository = fileRepository;
+    }
+
+    @RequestMapping(path = "/{id}", method = RequestMethod.GET)
+    @ResponseBody
+    public DocumentDTO findOneDocument(@PathVariable("id") Long id) {
+        Optional<Document> documentOptional = documentRepository.findById(id);
+        if (!documentOptional.isPresent()) {
+            throw new RuntimeException("Document not found");
+        }
+
+        DocumentDTO documentDTO = new DocumentDTO();
+        documentDTO.convertToDTO(documentOptional.get());
+        return documentDTO;
     }
 
     @RequestMapping(value = "/doUpload", method = RequestMethod.POST)
@@ -46,8 +63,10 @@ public class DocumentController {
         return "Success";
     }
 
+
     @RequestMapping(value = "/download/{file_id}", method = RequestMethod.GET, produces = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public @ResponseBody
+    public
+    @ResponseBody
     HttpEntity<byte[]> downloadDocument(@PathVariable("file_id") Long fileId) throws IOException {
         UploadedFile file = fileRepository.findById(fileId);
         byte[] document = file.getData();
