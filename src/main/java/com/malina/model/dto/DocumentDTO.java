@@ -25,6 +25,7 @@ import java.util.Optional;
 @NoArgsConstructor
 public class DocumentDTO {
 
+    private Long id;
     private String title;
     private String description;
     private boolean blocked = false;
@@ -35,24 +36,8 @@ public class DocumentDTO {
     private String createdBy;
     private String blockedBy;
 
-//    @OneToOne
-//    private UploadedFile currentVersion;
-
-//    @Singular
-//    @OneToMany
-//    private List<UploadedFile> historicalFiles = new ArrayList<>();
-
-//    @OneToOne
-//    private User blockedByUser;
-
-//    @Transient
-//    public void lockFile(Date blockedToDate) {
-//        this.blocked = true;
-//        this.blockedFromDate = new Date();
-//        this.blockedToDate = blockedToDate;
-//    }
-
     public DocumentDTO convertToDTO(Document document){
+        this.id = document.getId();
         this.title = document.getTitle();
         this.description = document.getDescription();
         this.blocked  = document.isBlocked();
