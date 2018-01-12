@@ -14,6 +14,8 @@ import java.util.List;
  */
 public interface ProjectService {
 
+    Project getById(Long id);
+
     void addUserToProject(Project project, User user);
 
     void addMessageToProject(Project project, Message message);

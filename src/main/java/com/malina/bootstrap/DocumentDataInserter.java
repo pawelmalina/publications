@@ -6,12 +6,12 @@ import com.malina.model.UploadedFile;
 import com.malina.model.User;
 import com.malina.repositories.DocumentRepository;
 import com.malina.repositories.FileRepository;
-import com.malina.repositories.ProjectRepository;
+import com.malina.services.DocumentService;
 import com.malina.services.FileServiceImpl;
 import com.malina.services.ProjectService;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.time.DateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -21,7 +21,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,6 +34,10 @@ public class DocumentDataInserter {
     private final Path pathToFilesDirectory = Paths.get("example.files");
 
     private final DocumentRepository documentRepository;
+
+    @Autowired
+    private DocumentService documentService;
+
     private final FileRepository fileRepository;
     private final FileServiceImpl fileService;
     private final ProjectService projectService;
@@ -71,39 +74,39 @@ public class DocumentDataInserter {
         UploadedFile uf1 = createUploadedFile(paths.get(4), user1,
                 new Date(new Date().getTime() - DateUtils.MILLIS_PER_DAY * 5));
         fileRepository.save(uf1);
-        fileService.addUploadedFileToDocument(document1, uf1);
+        documentService.addUploadedFileToDocument(document1, uf1);
 
 
         UploadedFile uf2 = createUploadedFile(paths.get(3), user2,
                 new Date(new Date().getTime() - DateUtils.MILLIS_PER_DAY * 4));
         fileRepository.save(uf2);
-        fileService.addUploadedFileToDocument(document1, uf2);
+        documentService.addUploadedFileToDocument(document1, uf2);
 
         UploadedFile uf3 = createUploadedFile(paths.get(2), user2,
                 new Date(new Date().getTime() - DateUtils.MILLIS_PER_DAY * 3));
         fileRepository.save(uf3);
-        fileService.addUploadedFileToDocument(document1, uf3);
+        documentService.addUploadedFileToDocument(document1, uf3);
 
         Document document2 = new Document();
         document2.setTitle("Rozdział 2");
         document2.setDescription("W rozdziale drugim... - " + DataUtils.LOREM);
         document2.setCreationDate(new Date(new Date().getTime() - DateUtils.MILLIS_PER_DAY * 2));
+        document2.lock(new Date(new Date().getTime() + DateUtils.MILLIS_PER_DAY * 7), user2);
         document2.setCreatedBy(user2);
         documentRepository.save(document2);
 
         UploadedFile uf4 = createUploadedFile(paths.get(0), user1,
                 new Date(new Date().getTime() - DateUtils.MILLIS_PER_DAY * 2));
         fileRepository.save(uf4);
-        fileService.addUploadedFileToDocument(document2, uf4);
+        documentService.addUploadedFileToDocument(document2, uf4);
 
         UploadedFile uf5 = createUploadedFile(paths.get(0), user2,
                 new Date(new Date().getTime() - DateUtils.MILLIS_PER_DAY * 1));
         fileRepository.save(uf5);
-        fileService.addUploadedFileToDocument(document2, uf5);
+        documentService.addUploadedFileToDocument(document2, uf5);
 
         projectService.addDocumentToProject(project1, document1);
         projectService.addDocumentToProject(project1, document2);
-
     }
 
     private void initFilesPaths() throws IOException {

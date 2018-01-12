@@ -1,5 +1,6 @@
 package com.malina.controllers;
 
+import com.fasterxml.jackson.databind.node.NumericNode;
 import com.malina.model.Document;
 import com.malina.model.Project;
 import com.malina.model.UploadedFile;
@@ -9,17 +10,22 @@ import com.malina.model.dto.ProjectDTO;
 import com.malina.repositories.DocumentRepository;
 import com.malina.repositories.FileRepository;
 import com.malina.repositories.UserRepository;
+import com.malina.services.DocumentService;
 import com.malina.services.FileService;
+import com.malina.services.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
@@ -31,56 +37,41 @@ import java.util.Optional;
 @Log4j
 @RequestMapping("document")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class DocumentController {
 
     private final DocumentRepository documentRepository;
+    private final DocumentService documentService;
+
     private final FileService fileService;
     private final FileRepository fileRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    public DocumentController(DocumentRepository documentRepository, FileService fileService, FileRepository fileRepository) {
-        this.documentRepository = documentRepository;
-        this.fileService = fileService;
-        this.fileRepository = fileRepository;
-    }
+    private final UserRepository userRepository;
+    private final UserService userService;
 
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)
     @ResponseBody
-    public DocumentDTO findOneDocument(@PathVariable("id") Long id) {
-        Optional<Document> documentOptional = documentRepository.findById(id);
-        if (!documentOptional.isPresent()) {
-            throw new RuntimeException("Document not found");
-        }
-
+    public DocumentDTO findOneDocument(@PathVariable("id") Long documentId) {
         DocumentDTO documentDTO = new DocumentDTO();
-        documentDTO.convertToDTO(documentOptional.get());
+        documentDTO.convertToDTO(documentService.getById(documentId));
         return documentDTO;
     }
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public String handleFileUpload(HttpServletRequest request,
-                                   @RequestParam MultipartFile fileUpload, @RequestParam Long documentId) throws Exception {
+    public HttpStatus uploadFile(HttpServletRequest request,
+                                 @RequestParam MultipartFile fileUpload, @RequestParam Long documentId) throws Exception {
 
-        Optional<Document> documentOptional = documentRepository.findById(documentId);
-        if (!documentOptional.isPresent()) {
-            throw new RuntimeException("Document not found");
-        }
-
-        Optional<User> userOptional = userRepository.findById(1l);
-        if(!userOptional.isPresent()) {
-            throw new RuntimeException("User not found");
-        }
+        Document document = documentService.getById(documentId);
+        User user = userService.getById(1l); // TODO: 09.01.18 Change magic number to user id from session
 
         UploadedFile uploadedFile = new UploadedFile(fileUpload.getOriginalFilename(), new Date(),
-                userOptional.get(), fileUpload.getBytes());
+                user, fileUpload.getBytes());
 
         fileRepository.save(uploadedFile);
-        fileService.addUploadedFileToDocument(documentOptional.get(), uploadedFile);
+        documentService.addUploadedFileToDocument(document, uploadedFile);
 
         log.debug("Uploaded file: " + fileUpload.getOriginalFilename());
-        return "Success";
+        return HttpStatus.OK;
     }
 
 
@@ -95,4 +86,24 @@ public class DocumentController {
         header.setContentLength(document.length);
         return new HttpEntity<byte[]>(document, header);
     }
+
+    @RequestMapping(value = "lock", method = RequestMethod.POST)
+    @ResponseBody
+    public HttpStatus lock(@RequestParam Long documentId, @RequestParam Long toDate) {
+        User user = userService.getById(1l); //// TODO: 11.01.18 change to user in session
+        Document document = documentService.getById(documentId);
+        Date date = new Date(toDate);
+        documentService.lockDocument(document, date, user);
+            return HttpStatus.OK;
+    }
+
+    @RequestMapping(value = "unlock", method = RequestMethod.POST)
+    @ResponseBody
+    public HttpStatus unlock(@RequestParam Long documentId) {
+        Document document = documentService.getById(documentId);
+        User user = userService.getById(1l); //// TODO: 11.01.18 change to user in session
+        documentService.unlockDocument(document, user);
+        return HttpStatus.OK;
+    }
+
 }

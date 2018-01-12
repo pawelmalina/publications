@@ -11,6 +11,7 @@ import com.malina.repositories.MessageRepository;
 import com.malina.repositories.ProjectRepository;
 import com.malina.repositories.UserRepository;
 import com.malina.services.ProjectService;
+import com.malina.services.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,9 @@ public class ProjectController {
     private final ProjectRepository projectRepository;
     private final ProjectService projectService;
     private final UserRepository userRepository;
+    private final UserService userService;
 
+    // // TODO: 09.01.18 maybe to be removed
     @RequestMapping("/all")
     public List<Project> getProjects() {
         return projectRepository.findAll();
@@ -87,17 +90,11 @@ public class ProjectController {
 
     @RequestMapping(path = "add-message", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON)
     public HttpStatus addMessageToProject(@RequestBody NewMessageDTO newMessage) {
-        Optional<Project> projectOptional = projectRepository.findById(newMessage.getTargetId());
-        if (!projectOptional.isPresent()) {
-            throw new RuntimeException("Project not found");
-        }
+        Project project = projectService.getById(newMessage.getTargetId());
+        User user = userService.getById(newMessage.getUserId());
 
-        Optional<User> userOptional = userRepository.findById(newMessage.getUserId());
-        if (!projectOptional.isPresent()) {
-            throw new RuntimeException("User not found");
-        }
-        Message message = new Message(userOptional.get(), new Date(), newMessage.getContent());
-        projectService.addMessageToProject(projectOptional.get(), message);
+        Message message = new Message(user, new Date(), newMessage.getContent());
+        projectService.addMessageToProject(project, message);
         return HttpStatus.OK;
     }
 }

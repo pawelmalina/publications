@@ -39,9 +39,10 @@ public class Document extends PersistentObject{
     private User blockedByUser;
 
     @Transient
-    public void lockFile(Date blockedToDate) {
+    public void lock(Date blockedToDate, User user) {
         this.blocked = true;
         this.blockedFromDate = new Date();
         this.blockedToDate = blockedToDate;
+        this.blockedByUser = user;
     }
 }

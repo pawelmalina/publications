@@ -41,6 +41,7 @@ public class DevDataInserter implements ApplicationListener<ContextRefreshedEven
         userData.insertData();
         projectData.insertData();
         addUsersToProjects();
+
         documentData.insertData(projectData.getProjects());
     }
 

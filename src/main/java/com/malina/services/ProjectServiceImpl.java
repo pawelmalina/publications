@@ -10,13 +10,11 @@ import com.malina.repositories.DocumentRepository;
 import com.malina.repositories.MessageRepository;
 import com.malina.repositories.ProjectRepository;
 import com.sun.xml.internal.bind.v2.TODO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -25,14 +23,23 @@ import java.util.stream.Collectors;
 @Service
 public class ProjectServiceImpl implements ProjectService {
 
+    @Autowired
     private ProjectRepository projectRepository;
+
+    @Autowired
     private MessageRepository messageRepository;
+
+    @Autowired
     private DocumentRepository documentRepository;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository, MessageRepository messageRepository, DocumentRepository documentRepository) {
-        this.projectRepository = projectRepository;
-        this.messageRepository = messageRepository;
-        this.documentRepository = documentRepository;
+    @Override
+    public Project getById(Long id) {
+        Optional<Project> projectOptional = projectRepository.findById(id);
+        if (!projectOptional.isPresent()) {
+            throw new RuntimeException("Project not found");
+        }
+
+        return projectOptional.get();
     }
 
     @Override
@@ -64,6 +71,7 @@ public class ProjectServiceImpl implements ProjectService {
         projectRepository.save(project);
     }
 
+    @Override
     public List<MessageDTO> getMessagesDTOFromProject(Project project) {
         return project.getMessages().stream().sorted((m1, m2) ->
                 Long.compare(m2.getDate().getTime(), m1.getDate().getTime())
