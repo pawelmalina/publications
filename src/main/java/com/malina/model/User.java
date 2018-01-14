@@ -1,6 +1,7 @@
 package com.malina.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.malina.auth.Role;
 import lombok.*;
 
 import javax.persistence.Entity;
@@ -26,6 +27,8 @@ public class User extends PersistentObject {
     private String lastName;
     private String phone;
     private String email;
+
+    private Role role = Role.USER;
 
     @ManyToMany(mappedBy = "users")
     private Set<Project> projects = new HashSet<>();

@@ -1,5 +1,6 @@
 package com.malina.controllers;
 
+import com.malina.auth.SessionState;
 import com.malina.model.Message;
 import com.malina.model.Project;
 import com.malina.model.User;
@@ -23,6 +24,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by pawel on 24.11.17.
@@ -31,13 +33,14 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/project")
 @AllArgsConstructor
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"${origin.domain}","*"})
 public class ProjectController {
 
     private final ProjectRepository projectRepository;
     private final ProjectService projectService;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final SessionState sessionState;
 
     // // TODO: 09.01.18 maybe to be removed
     @RequestMapping("/all")
@@ -50,6 +53,15 @@ public class ProjectController {
         List<NameAndIdDTO> projectNameDTOs = projectRepository.getProjectsName();
         return projectNameDTOs;
     }
+
+    @RequestMapping(value = "/where-user-is/{user_id}", method = RequestMethod.GET)
+    @ResponseBody
+    public List<NameAndIdDTO> getProjectNamesForUser(@PathVariable("user_id") Long id) {
+        List<Project> projects = projectRepository.getUsersNameFromProject(id);
+        List<NameAndIdDTO> projectDTOs = projects.stream().map(project -> new NameAndIdDTO(project.getId(), project.getName())).collect(Collectors.toList());
+        return projectDTOs;
+    }
+
 
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)
     @ResponseBody
@@ -72,6 +84,17 @@ public class ProjectController {
 //        projectService.addUserToProject(project, user);
 //    }
 
+    @RequestMapping(value = "add-users-to-project/{project_id}", method = RequestMethod.POST)
+    @ResponseBody
+    public HttpStatus addUsersToProject(@PathVariable("project_id") Long projectId, @RequestBody Long[] usersIds) {
+        Project project = projectService.getById(projectId);
+        for (Long id: usersIds) {
+            User user = userService.getById(id);
+            projectService.addUserToProject(project, user);
+        }
+        return HttpStatus.OK;
+    }
+
     @RequestMapping(path = "{project_id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
     public void removeProject(@PathVariable("project_id") String projectId) {
@@ -91,7 +114,7 @@ public class ProjectController {
     @RequestMapping(path = "add-message", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON)
     public HttpStatus addMessageToProject(@RequestBody NewMessageDTO newMessage) {
         Project project = projectService.getById(newMessage.getTargetId());
-        User user = userService.getById(newMessage.getUserId());
+        User user = sessionState.getCurrentUser();
 
         Message message = new Message(user, new Date(), newMessage.getContent());
         projectService.addMessageToProject(project, message);

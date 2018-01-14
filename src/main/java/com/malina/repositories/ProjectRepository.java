@@ -20,8 +20,11 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Query("SELECT new com.malina.model.dto.NameAndIdDTO(u.id, u.name) FROM Project u")
     List<NameAndIdDTO> getProjectsName();
 
-    @Query("SELECT new com.malina.model.dto.NameAndIdDTO(u.id, u.name) FROM Project u")
-    List<NameAndIdDTO> getUsersNameFromProject();
+//    @Query(value = "SELECT new com.malina.model.dto.NameAndIdDTO(u.id, u.name) FROM Project u where in (SELECT PROJECT_ID FROM PROJECT_USER where user_id=5)" , nativeQuery = true)
+    @Query(value = "SELECT * FROM PROJECT WHERE ID in (" +
+            "SELECT PROJECT_ID FROM PROJECT_USER where user_id=?1" +
+            ")" , nativeQuery = true)
+    List<Project> getUsersNameFromProject(Long id);
 
 //    @Query("SELECT new com.malina.model.dto.NameAndIdDTO(u.id, u.name) FROM Project u")
 //    List<NameAndIdDTO> getDocumentNameFromProject();

@@ -23,14 +23,17 @@ public class Project extends PersistentObject {
     private String title;
     private String name;
 
+    @OneToOne
+    private User projectManager;
+
     @Lob
     private String description;
 
     @Singular
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "project_user",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "project_id"))
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> users = new HashSet<>();
 
 

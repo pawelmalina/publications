@@ -1,6 +1,7 @@
 package com.malina.controllers;
 
 import com.fasterxml.jackson.databind.node.NumericNode;
+import com.malina.auth.SessionState;
 import com.malina.model.Document;
 import com.malina.model.Project;
 import com.malina.model.UploadedFile;
@@ -36,7 +37,7 @@ import java.util.Optional;
 @RestController
 @Log4j
 @RequestMapping("document")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "${origin.domain}")
 @RequiredArgsConstructor
 public class DocumentController {
 
@@ -48,6 +49,8 @@ public class DocumentController {
 
     private final UserRepository userRepository;
     private final UserService userService;
+
+    private final SessionState sessionState;
 
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)
     @ResponseBody
@@ -62,7 +65,7 @@ public class DocumentController {
                                  @RequestParam MultipartFile fileUpload, @RequestParam Long documentId) throws Exception {
 
         Document document = documentService.getById(documentId);
-        User user = userService.getById(1l); // TODO: 09.01.18 Change magic number to user id from session
+        User user = sessionState.getCurrentUser();
 
         UploadedFile uploadedFile = new UploadedFile(fileUpload.getOriginalFilename(), new Date(),
                 user, fileUpload.getBytes());
@@ -90,7 +93,7 @@ public class DocumentController {
     @RequestMapping(value = "lock", method = RequestMethod.POST)
     @ResponseBody
     public HttpStatus lock(@RequestParam Long documentId, @RequestParam Long toDate) {
-        User user = userService.getById(1l); //// TODO: 11.01.18 change to user in session
+        User user = sessionState.getCurrentUser();
         Document document = documentService.getById(documentId);
         Date date = new Date(toDate);
         documentService.lockDocument(document, date, user);
@@ -101,7 +104,7 @@ public class DocumentController {
     @ResponseBody
     public HttpStatus unlock(@RequestParam Long documentId) {
         Document document = documentService.getById(documentId);
-        User user = userService.getById(1l); //// TODO: 11.01.18 change to user in session
+        User user = sessionState.getCurrentUser();
         documentService.unlockDocument(document, user);
         return HttpStatus.OK;
     }
