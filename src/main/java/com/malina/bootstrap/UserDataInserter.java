@@ -35,9 +35,9 @@ public class UserDataInserter {
         users.add(user1);
 
         User user2 = User.builder()
-                .firstName("Janek")
+                .firstName("Jan")
                 .lastName("Kowalski")
-                .email("janekkowalskik@example.com")
+                .email("jankowalski@example.com")
                 .password(getExamplePassword())
                 .phone("747485859")
                 .role(Role.MENAGER)
@@ -109,7 +109,7 @@ public class UserDataInserter {
         User user9 = User.builder()
                 .firstName("Barbara")
                 .lastName("Bylica")
-                .email("edwardborgosz@example.com")
+                .email("barbarabylica@gmail.com")
                 .password(getExamplePassword())
                 .phone("23123123123")
                 .build();

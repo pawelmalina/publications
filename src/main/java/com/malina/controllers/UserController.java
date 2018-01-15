@@ -46,4 +46,5 @@ public class UserController {
         User projectManager = project.getProjectManager();
         return sessionState.getCurrentUser().getId().equals(projectManager.getId());
     }
+
 }
