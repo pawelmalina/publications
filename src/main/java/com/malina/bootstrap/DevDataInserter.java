@@ -1,9 +1,6 @@
 package com.malina.bootstrap;
 
-import com.malina.model.Document;
-import com.malina.model.Message;
-import com.malina.model.Project;
-import com.malina.model.User;
+import com.malina.model.*;
 import com.malina.repositories.*;
 import com.malina.services.ProjectServiceImpl;
 import lombok.AllArgsConstructor;
@@ -70,6 +67,7 @@ public class DevDataInserter implements ApplicationListener<ContextRefreshedEven
         projectRepository.save(project1);
         projectRepository.save(project2);
         projectRepository.save(project3);
+
 
         Message message1 = new Message(user1, new Date(1513282620000l), "Ten projekt jest potrzebny.");
         Message message2 = new Message(user2, new Date(1513283620000l), "Sugeruję  zmianę nazwy tego projektu.");

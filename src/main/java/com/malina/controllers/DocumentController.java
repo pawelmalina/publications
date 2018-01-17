@@ -157,6 +157,14 @@ public class DocumentController {
         return checkUserIsOwner(documentId);
     }
 
+    @RequestMapping(value = "/check-user-is-manager-of-project/{document_id}", method = RequestMethod.GET)
+    public boolean checkManagerOfProject(@PathVariable("document_id") Long documentId) {
+        Document document = documentService.getById(documentId);
+        User projectManager = document.getProject().getProjectManager();
+
+        return projectManager.equals(sessionState.getCurrentUser());
+    }
+
     @RequestMapping(path = "all-messages/{document_id}", method = RequestMethod.GET)
     @ResponseBody
     public List<MessageDTO> getMessagesFromDocument(@PathVariable("document_id") Long documentId) {

@@ -1,11 +1,9 @@
 package com.malina.bootstrap;
 
-import com.malina.model.Document;
-import com.malina.model.Project;
-import com.malina.model.UploadedFile;
-import com.malina.model.User;
+import com.malina.model.*;
 import com.malina.repositories.DocumentRepository;
 import com.malina.repositories.FileRepository;
+import com.malina.repositories.PublicationRepository;
 import com.malina.services.DocumentService;
 import com.malina.services.FileServiceImpl;
 import com.malina.services.ProjectService;
@@ -34,6 +32,9 @@ public class DocumentDataInserter {
     private final Path pathToFilesDirectory = Paths.get("example.files");
 
     private final DocumentRepository documentRepository;
+
+    @Autowired
+    private PublicationRepository publicationRepository;
 
     @Autowired
     private DocumentService documentService;
@@ -150,6 +151,23 @@ public class DocumentDataInserter {
 
         projectService.addDocumentToProject(project2, document4);
 
+
+        Publication publication1 = Publication.builder()
+                .title("System SWTP")
+                .description("System wspomagajacy prace zespołową na uczelni podczas przygotowania publikacji naukowych")
+//                .project(project1)
+                .file(uf2)
+                .build();
+
+        Publication publication2 = Publication.builder()
+                .title("System Generacji 3D")
+                .description("System generujacy grafiki 3D próbek materiałów metalurgicznych")
+//                .project(project2)
+                .file(uf3)
+                .build();
+
+        publicationRepository.save(publication1);
+        publicationRepository.save(publication2);
     }
 
     private void initFilesPaths() throws IOException {

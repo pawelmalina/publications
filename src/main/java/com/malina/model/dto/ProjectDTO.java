@@ -2,10 +2,7 @@ package com.malina.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.malina.model.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.Singular;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
