@@ -21,7 +21,7 @@ public class Document extends PersistentObject{
     @Lob
     private String description;
     private boolean blocked = false;
-    private Date creationDate;
+    private Date creationDate = new Date();
     private Date blockedFromDate;
     private Date blockedToDate;
 
@@ -37,6 +37,13 @@ public class Document extends PersistentObject{
 
     @OneToOne
     private User blockedByUser;
+
+    @ManyToOne
+    private Project project;
+
+    @OneToMany
+    @Singular
+    private List<Message> messages = new ArrayList<>();
 
     @Transient
     public void lock(Date blockedToDate, User user) {

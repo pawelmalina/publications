@@ -99,7 +99,7 @@ public class UserDataInserter {
         User user8 = User.builder()
                 .firstName("Edward")
                 .lastName("Borgosz")
-                .email("edwardborgosz@example.com")
+                .email("edwardborgosz@gmail.com")
                 .password(getExamplePassword())
                 .phone("23123123123")
                 .build();

@@ -14,7 +14,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@EqualsAndHashCode(exclude = "users")
+@EqualsAndHashCode(exclude = {"users","documents"})
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -41,7 +41,7 @@ public class Project extends PersistentObject {
     @Singular
     private Set<Task> tasks = new HashSet<>();
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "project")
     @Singular
     private Set<Document> documents = new HashSet<>();
 

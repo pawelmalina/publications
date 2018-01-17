@@ -52,6 +52,15 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    public void removeUserFromProjec(Project project, User user) {
+        Set<User> users = new HashSet<>();
+        project.getUsers().iterator().forEachRemaining(users::add);
+        users.remove(user);
+        project.setUsers(users);
+        projectRepository.save(project);
+    }
+
+    @Override
     public void addMessageToProject(Project project, Message message) {
         List<Message> messages = new ArrayList<>();
         project.getMessages().iterator().forEachRemaining(messages::add);
@@ -67,6 +76,9 @@ public class ProjectServiceImpl implements ProjectService {
         project.getDocuments().iterator().forEachRemaining(documents::add);
         documents.add(document);
         project.setDocuments(documents);
+        document.setProject(project);
+
+
         documentRepository.save(documents);
         projectRepository.save(project);
     }

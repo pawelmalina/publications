@@ -4,11 +4,7 @@ import com.malina.auth.SessionState;
 import com.malina.model.Message;
 import com.malina.model.Project;
 import com.malina.model.User;
-import com.malina.model.dto.MessageDTO;
-import com.malina.model.dto.NewMessageDTO;
-import com.malina.model.dto.ProjectDTO;
-import com.malina.model.dto.NameAndIdDTO;
-import com.malina.repositories.MessageRepository;
+import com.malina.model.dto.*;
 import com.malina.repositories.ProjectRepository;
 import com.malina.repositories.UserRepository;
 import com.malina.services.ProjectService;
@@ -18,8 +14,6 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +27,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/project")
 @AllArgsConstructor
-@CrossOrigin(origins = {"${origin.domain}","*"})
+@CrossOrigin(origins = {"${origin.domain}","*"}, methods = {RequestMethod.POST, RequestMethod.PUT, RequestMethod.OPTIONS, RequestMethod.DELETE, RequestMethod.GET})
 public class ProjectController {
 
     private final ProjectRepository projectRepository;
@@ -43,10 +37,10 @@ public class ProjectController {
     private final SessionState sessionState;
 
     // // TODO: 09.01.18 maybe to be removed
-    @RequestMapping("/all")
-    public List<Project> getProjects() {
-        return projectRepository.findAll();
-    }
+//    @RequestMapping("/all")
+//    public List<Project> getProjects() {
+//        return projectRepository.findAll();
+//    }
 
     @RequestMapping("/all-names")
     public List<NameAndIdDTO> getProjectNames() {
@@ -95,6 +89,15 @@ public class ProjectController {
         return HttpStatus.OK;
     }
 
+    @RequestMapping(value = "remove-users-from-project/{project_id}", method = RequestMethod.POST)
+    @ResponseBody
+    public HttpStatus removeUsersFromProject(@PathVariable("project_id") Long projectId, @RequestBody Long usersId) {
+        Project project = projectService.getById(projectId);
+        User user = userService.getById(usersId);
+        projectService.removeUserFromProjec(project, user);
+        return HttpStatus.OK;
+    }
+
     @RequestMapping(path = "{project_id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
     public void removeProject(@PathVariable("project_id") String projectId) {
@@ -120,4 +123,37 @@ public class ProjectController {
         projectService.addMessageToProject(project, message);
         return HttpStatus.OK;
     }
+
+
+    @RequestMapping(path = "add", method = RequestMethod.POST)
+    public boolean addProject(@RequestBody UpdateObjectDTO dto) {
+        Project project = new Project();
+        User currentUser = sessionState.getCurrentUser();
+        project.setProjectManager(currentUser);
+        project.setName(dto.getTitle());
+        project.setDescription(dto.getDescription());
+        projectService.addUserToProject(project, currentUser);
+        projectRepository.save(project);
+        return true;
+    }
+
+    @RequestMapping(value = "/update-project", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON)
+    public HttpStatus updateProject(@RequestBody UpdateObjectDTO updateObject) {
+        Project project = projectService.getById(updateObject.getId());
+        project.setName(updateObject.getTitle());
+        project.setDescription(updateObject.getDescription());
+        projectRepository.save(project);
+        return HttpStatus.OK;
+    }
+
+    @RequestMapping(value = "/remove/{project_id}", method = RequestMethod.POST)
+    public boolean remove(@PathVariable("project_id") Long projectId) {
+        Project project = projectService.getById(projectId);
+        if(project.getProjectManager().equals(sessionState.getCurrentUser())){
+            projectRepository.delete(projectId);
+            return false;
+        }
+        return false;
+    }
+
 }

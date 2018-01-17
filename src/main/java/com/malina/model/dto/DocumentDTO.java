@@ -33,11 +33,13 @@ public class DocumentDTO {
     private Long blockedToDate;
 
     private String createdBy;
-    private String blockedBy;
+    private NameAndIdDTO blockedBy;
+
+    private NameAndIdDTO project;
 
 
     private UploadedFileDTO currentVersion;
-    private List<UploadedFileDTO> historicalFiles;
+    private List<UploadedFileDTO> historicalFiles = new ArrayList<>();
 
     public DocumentDTO convertToDTO(Document document) {
         this.id = document.getId();
@@ -46,9 +48,12 @@ public class DocumentDTO {
         this.blocked = document.isBlocked();
         this.creationDate = document.getCreationDate().getTime();
         this.createdBy = document.getCreatedBy().getFullName();
+        this.project = new NameAndIdDTO(document.getProject().getId(),document.getProject().getName());
 
-        this.currentVersion = new UploadedFileDTO().convertUploadedFileToDTO(document.getCurrentVersion());
 
+        if(document.getCurrentVersion() != null) {
+            this.currentVersion = new UploadedFileDTO().convertUploadedFileToDTO(document.getCurrentVersion());
+        }
         List<UploadedFileDTO> uploadedFileDTOs = document.getHistoricalFiles().stream()
                 .sorted((m1, m2) -> Long.compare(m2.getUploadedDate().getTime(), m1.getUploadedDate().getTime()))
                 .map(file -> {
@@ -58,9 +63,15 @@ public class DocumentDTO {
         this.historicalFiles = uploadedFileDTOs;
 
         if (this.blocked) {
+
+            if(document.getBlockedToDate().getTime() < new Date().getTime()){
+                this.blocked = false;
+                return this;
+            }
+
             this.blockedFromDate = document.getBlockedFromDate().getTime();
             this.blockedToDate = document.getBlockedToDate().getTime();
-            this.blockedBy = document.getBlockedByUser().getFullName();
+            this.blockedBy = new NameAndIdDTO(document.getBlockedByUser().getId(), document.getBlockedByUser().getFullName());
         }
         return this;
     }

@@ -107,6 +107,49 @@ public class DocumentDataInserter {
 
         projectService.addDocumentToProject(project1, document1);
         projectService.addDocumentToProject(project1, document2);
+
+
+
+        Project project2 = projects.get(1);
+        List<User> users2 = new ArrayList<>();
+        project2.getUsers().iterator().forEachRemaining(users2::add);
+        User user3 = users2.get(0);
+        User user4 = users2.get(1);
+
+        Document document3 = new Document();
+        document3.setTitle("Wstępne załozenie");
+        document3.setDescription("Dokument ten zawiera.... - " + DataUtils.LOREM);
+        document3.setCreationDate(new Date(new Date().getTime() - DateUtils.MILLIS_PER_DAY * 3));
+        document3.setCreatedBy(user3);
+        documentRepository.save(document3);
+
+        UploadedFile uf6 = createUploadedFile(paths.get(4), user3,
+                new Date(new Date().getTime() - DateUtils.MILLIS_PER_DAY * 5));
+        fileRepository.save(uf6);
+        documentService.addUploadedFileToDocument(document3, uf6);
+
+
+        UploadedFile uf7 = createUploadedFile(paths.get(3), user4,
+                new Date(new Date().getTime() - DateUtils.MILLIS_PER_DAY * 4));
+        fileRepository.save(uf7);
+        documentService.addUploadedFileToDocument(document3, uf7);
+
+        UploadedFile uf8 = createUploadedFile(paths.get(2), user3,
+                new Date(new Date().getTime() - DateUtils.MILLIS_PER_DAY * 3));
+        fileRepository.save(uf8);
+        documentService.addUploadedFileToDocument(document3, uf8);
+
+        projectService.addDocumentToProject(project2, document3);
+
+        Document document4 = new Document();
+        document4.setTitle("Harmonogram");
+        document4.setDescription("Harmonogram ten zawiera.... - " + DataUtils.LOREM);
+        document4.setCreationDate(new Date(new Date().getTime() - DateUtils.MILLIS_PER_DAY * 3));
+        document4.setCreatedBy(user4);
+        documentRepository.save(document4);
+
+        projectService.addDocumentToProject(project2, document4);
+
     }
 
     private void initFilesPaths() throws IOException {

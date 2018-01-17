@@ -22,4 +22,12 @@ public interface UserRepository extends JpaRepository<User, Long>{
     @Query(value = "SELECT * FROM USER WHERE ID not in (" +
             "SELECT USER_ID FROM PROJECT_USER where  PROJECT_ID = ?1)", nativeQuery = true)
     List<User> getNotAssignedUserInProject(Long projectId);
+
+
 }
+
+
+
+
+//        SELECT * FROM DOCUMENT Where ID in (SELECT DOCUMENTS_ID FROM PROJECT_DOCUMENTS WHERE PROJECT_ID in (
+//        SELECT PROJECT_ID FROM PROJECT_USER where  USER_ID = 6))

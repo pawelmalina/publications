@@ -18,6 +18,8 @@ public interface ProjectService {
 
     void addUserToProject(Project project, User user);
 
+    void removeUserFromProjec(Project project, User user);
+
     void addMessageToProject(Project project, Message message);
 
     void addDocumentToProject(Project project, Document document);
