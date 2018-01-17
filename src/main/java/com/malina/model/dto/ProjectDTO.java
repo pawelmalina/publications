@@ -39,7 +39,6 @@ public class ProjectDTO {
         this.setDescription(project.getDescription());
         this.setProjectMenager(new NameAndIdDTO(project.getProjectManager().getId(), project.getProjectManager().getFullName()));
         this.setDocuments(project.getDocuments().stream().map(document -> new NameAndIdDTO(document.getId(), document.getTitle())).collect(Collectors.toSet()));
-        this.setTasks(project.getTasks().stream().map(PersistentObject::getId).collect(Collectors.toSet()));
         this.setUsers(project.getUsers().stream().map(user -> {
             return new UserWithEmailDTO(user.getId(), user.getFullName(), user.getEmail());
         }).collect(Collectors.toSet()));

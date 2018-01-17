@@ -20,7 +20,6 @@ public class DevDataInserter implements ApplicationListener<ContextRefreshedEven
 
     private final UserRepository userRepository;
     private final ProjectRepository projectRepository;
-    private final TaskRepository taskRepository;
     private final DocumentRepository documentRepository;
     private final MessageRepository messageRepository;
     private final FileRepository fileRepository;

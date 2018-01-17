@@ -36,11 +36,6 @@ public class Project extends PersistentObject {
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> users = new HashSet<>();
 
-
-    @OneToMany
-    @Singular
-    private Set<Task> tasks = new HashSet<>();
-
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "project")
     @Singular
     private Set<Document> documents = new HashSet<>();
